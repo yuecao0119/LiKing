@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import { postRequest } from "@/utils/api";
 export default {
   name: "LoginForm",
   data() {
@@ -59,14 +60,24 @@ export default {
       alert("获取验证码");
     },
     submitLogin() {
-      alert("Login");
+      postRequest("/login", this.loginForm).then(response => {
+        if(response){
+          // 存储用户token
+          const tokenStr = response.obj.tokenHead+response.obj.token;
+          window.sessionStorage.setItem("tokenStr", tokenStr);
+          // 跳转首页
+          this.$router.replace('/');
+          // replace替换页面  浏览器不能后退按钮返回
+          // push 浏览器能后退按钮返回
+        }
+      });
     },
   },
 };
 </script>
 
 <style scoped>
-.login-form{
+.login-form {
   margin: 0 0.6rem;
 }
 .login-form h3 {
@@ -134,7 +145,7 @@ export default {
   transform: scaleX(0);
   transition: transform 0.3s ease;
 }
-.login-form input:focus ~ .input-underline:before{
+.login-form input:focus ~ .input-underline:before {
   transform: scaleX(1);
 }
 .login-form button {

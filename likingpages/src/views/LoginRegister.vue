@@ -7,8 +7,8 @@
         <span>Liking</span>
       </div>
       <div class="text-box">
-        <h3>让标准</h3>
-        <p>成为人与自然之间的桥梁</p>
+        <h3>Liking</h3>
+        <p>让你的主页更轻便、快捷</p>
       </div>
       <div class="footer-box">
         <span class="footer-list">
@@ -40,8 +40,9 @@
 </template>
 
 <script>
-import LoginForm from "@/components/LoginRegister/LoginForm.vue";
-import RegisterForm from "@/components/LoginRegister/RegisterForm.vue";
+import LoginForm from '../components/LoginRegister/LoginForm.vue'
+import RegisterForm from '../components/LoginRegister/RegisterForm.vue'
+
 
 export default {
   name: "LoginRegister",
@@ -91,6 +92,7 @@ export default {
   bottom: 0;
   background: url("../assets/login_background.jpg") no-repeat;
   background-size: cover;
+  z-index: -1;
 }
 .text-box {
   position: fixed;

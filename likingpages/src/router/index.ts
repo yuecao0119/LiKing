@@ -1,17 +1,50 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from '../views/Home.vue'
 import LoginRegister from '../views/LoginRegister.vue'
-import LoginForm from '../components/LoginRegister/LoginForm.vue'
+import CommonApp from '../views/Home/CommonApp.vue'
+import Todo from '../views/Home/Todo.vue'
+import Note from '../views/Home/Note.vue'
+import FileSystems from '../views/Home/FileSystems.vue'
+import Translation from '../views/Home/Translation.vue'
+
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: '主页',
+    component: Home,
+    children: [ // 这样路径跳转会匹配到Home中的router-view
+      {
+        path: '/commonApp',
+        name: '常用',
+        component: CommonApp,
+      },
+      {
+        path: '/todo',
+        name: '日程',
+        component: Todo,
+      },
+      {
+        path: '/note',
+        name: '笔记',
+        component: Note,
+      },
+      {
+        path: '/fileSystems',
+        name: '文件',
+        component: FileSystems,
+      },
+      {
+        path: '/translation',
+        name: '翻译',
+        component: Translation,
+      }
+    ]
   },
   {
     path: '/login',
     name: 'Login',
-    component: LoginRegister
+    component: LoginRegister,
   }
 ]
 

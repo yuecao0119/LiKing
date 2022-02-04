@@ -40,7 +40,7 @@
         >
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitregister">注册</el-button>
+        <el-button type="primary" @click="submitRegister">注册</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -64,8 +64,12 @@ export default {
     getSecurityCode() {
       alert("获取验证码");
     },
-    submitregister() {
-      alert("register");
+    submitRegister() {
+      postRequest("/register", this.loginForm).then(response => {
+        if(response){
+          this.$router.replace('/login');
+        }
+      });
     },
   },
 };
