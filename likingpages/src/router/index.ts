@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from '../views/Home.vue'
 import LoginRegister from '../views/LoginRegister.vue'
+import Search from '../views/Home/Search.vue';
 import CommonApp from '../views/Home/CommonApp.vue'
 import Todo from '../views/Home/Todo.vue'
 import Note from '../views/Home/Note.vue'
@@ -13,7 +14,13 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: '主页',
     component: Home,
+    redirect: '/search', // 地址重定向
     children: [ // 这样路径跳转会匹配到Home中的router-view
+      {
+        path: '/search',
+        name: '首页',
+        component: Search,
+      },
       {
         path: '/commonApp',
         name: '常用',

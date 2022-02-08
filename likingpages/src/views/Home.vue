@@ -2,34 +2,36 @@
   <div class="home">
     <el-container>
       <!-- 背景图片 -->
-      <div class="home-background"></div>
+      <div class="home-background" :class="{ focusedbg: this.focused == true }">
+        <div :class="{ markbg: this.focused == true }"></div>
+      </div>
       <!-- 头部导航 -->
       <el-header>
         <!-- LOGO -->
         <div class="logo">
-          <a href="/" @click="activeURL = 0"
+          <a href="/" @click="this.activeURL = 0"
             ><img src="../assets/logo.png" alt="logo"
           /></a>
         </div>
         <!-- 菜单栏 -->
         <div class="menu" router>
-          <div class="menu-item" :key="0">
-            <a href="/" @click="activeURL = 0">首页</a>
+          <!-- <div class="menu-item" :key="0">
+            <a href="/" @click="this.activeURL = 0">首页</a>
             <div
               class="menu-underline"
-              :class="{ activedPage: activeURL == 0 }"
+              :class="{ activedPage: this.activeURL == 0 }"
             ></div>
-          </div>
+          </div> -->
           <div
             class="menu-item"
-            @click="activeURL = index + 1"
+            @click="this.activeURL = index"
             v-for="(item, index) in this.$router.options.routes[0].children"
-            :key="index + 1"
+            :key="index"
           >
             <router-link :to="item.path">{{ item.name }}</router-link>
             <div
               class="menu-underline"
-              :class="{ activedPage: activeURL == index + 1 }"
+              :class="{ activedPage: this.activeURL == index }"
             ></div>
           </div>
         </div>
@@ -42,32 +44,60 @@
         </div>
       </el-header>
       <!-- 主体部分 -->
-      <el-main>
-        <!-- 时间 -->
-        <div class="time-box">
-          
-        </div>
-        <!-- 主题内容 -->
-        <router-view />
-      </el-main>
+      <div class="main-box" @click="toHome($event)">
+        <el-main>
+          <!-- 时间 -->
+          <div class="time-box">
+            <router-link
+              to="/commonApp"
+              @click="this.activeURL = 1"
+              style="text-decoration: none"
+              ><Time
+            /></router-link>
+          </div>
+          <!-- 主题内容 -->
+          <router-view :focusedByFather="this.focused" @changeFocused="changeFocusedVal"/>
+        </el-main>
+      </div>
       <!-- 底部信息 -->
       <el-footer>
-        <Footer></Footer>
+        <Footer />
       </el-footer>
     </el-container>
   </div>
 </template>
 
 <script>
-import Footer from "../components/Home/Footer.vue"
+import Time from "../components/Home/Time.vue";
+import Footer from "../components/Home/Footer.vue";
 
 export default {
   name: "Home",
-  components: { Footer },
+  components: {
+    Time,
+    Footer,
+  },
   data() {
     return {
       activeURL: 0,
+      focused: false,
     };
+  },
+  methods: {
+    toHome(event) {
+      if (
+        event.target.className !== "main-box" &&
+        event.target.className !== "el-main"
+      ) {
+        return;
+      }
+      this.activeURL = 0;
+      this.focused = false;
+      this.$router.push("/");
+    },
+    changeFocusedVal(val) {
+      this.focused = val;
+    }
   },
 };
 </script>
@@ -85,7 +115,25 @@ export default {
   bottom: 0;
   background: url("../assets/home_background.jpg") no-repeat;
   background-size: cover;
-  z-index: -1;
+  object-fit: cover;
+  transition: 0.25s;
+  z-index: -10;
+}
+.markbg {
+  z-index: -9;
+  opacity: 1;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(5px);
+  background-image: radial-gradient(rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0.5) 100%),
+    radial-gradient(rgba(0, 0, 0, 0) 33%, rgba(0, 0, 0, 0.3) 166%);
+  transition: 0.25s;
+}
+.focusedbg {
+  transform: scale(1.1);
 }
 .el-header {
   width: 100%;
@@ -155,10 +203,35 @@ export default {
   border-radius: 50%;
   object-fit: cover;
 }
-.person .settings {
+.person {
   padding: 0;
 }
-
+.main-box {
+  width: 100%;
+  position: absolute;
+  top: 50px;
+  bottom: 0px;
+}
+.el-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.time-box {
+  margin-top: 3%;
+}
+.time-box:hover {
+  animation: zoom 0.7s;
+}
+@keyframes zoom {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
 .el-footer {
   width: 100%;
   display: flex;
