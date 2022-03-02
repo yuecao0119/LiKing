@@ -60,17 +60,7 @@ export default {
       alert("获取验证码");
     },
     submitLogin() {
-      postRequest("/login", this.loginForm).then(response => {
-        if(response){
-          // 存储用户token
-          const tokenStr = response.obj.tokenHead+response.obj.token;
-          window.sessionStorage.setItem("tokenStr", tokenStr);
-          // 跳转首页
-          this.$router.replace('/');
-          // replace替换页面  浏览器不能后退按钮返回
-          // push 浏览器能后退按钮返回
-        }
-      });
+      
     },
   },
 };

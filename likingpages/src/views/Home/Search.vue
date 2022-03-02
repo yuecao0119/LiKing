@@ -32,12 +32,13 @@
 </template>
 
 <script>
+
 export default {
   name: "Search",
-  props: ["focusedByFather"],
+  props: ["fFocused", "fActivePageIndex"],
   data() {
     return {
-      focused: false,
+      focused: true,
       words: {
         id: "0",
         content: "「\ 时人莫小池中水，浅处无妨有卧龙\ 」",
@@ -46,10 +47,24 @@ export default {
     };
   },
   components: {},
+  mounted() {
+    if (this.focused == true) {
+      this.$nextTick(function () {
+        document.getElementsByClassName("search-input")[0].focus();
+      });
+    }
+  },
   watch: {
     // 监听父组件的focused属性值
-    focusedByFather: function (val) {
+    fFocused: function (val) {
       this.focused = val;
+    },
+    fActivePageIndex: function (val) {
+      if (val == 0) {
+        this.$nextTick(function () {
+          document.getElementsByClassName("search-input")[0].focus();
+        });
+      }
     },
   },
   methods: {
@@ -130,7 +145,7 @@ export default {
   z-index: -1;
   height: 100%;
   width: 100%;
-  background-image: linear-gradient(90deg, #fff, #00000000);
+  background-image: linear-gradient(120deg, #fff, #00000000);
   opacity: 0;
   transition: all 0.5s ease;
 }

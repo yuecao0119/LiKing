@@ -9,29 +9,27 @@
       <el-header>
         <!-- LOGO -->
         <div class="logo">
-          <a href="/" @click="this.activeURL = 0"
+          <a href="/" @click="this.activePageIndex = 0"
             ><img src="../assets/logo.png" alt="logo"
           /></a>
         </div>
         <!-- 菜单栏 -->
         <div class="menu" router>
-          <!-- <div class="menu-item" :key="0">
-            <a href="/" @click="this.activeURL = 0">首页</a>
-            <div
-              class="menu-underline"
-              :class="{ activedPage: this.activeURL == 0 }"
-            ></div>
-          </div> -->
           <div
             class="menu-item"
-            @click="this.activeURL = index"
-            v-for="(item, index) in this.$router.options.routes[0].children"
+            @click="this.activePageIndex = index"
+            v-for="(item, index) in this.pageInfo"
             :key="index"
           >
-            <router-link :to="item.path">{{ item.name }}</router-link>
+            <div
+              class="menu-item-router"
+              @click="clickMenuItem(item.index, item.componentName)"
+            >
+              {{ item.name }}
+            </div>
             <div
               class="menu-underline"
-              :class="{ activedPage: this.activeURL == index }"
+              :class="{ activedPage: this.activePageIndex == index }"
             ></div>
           </div>
         </div>
@@ -48,15 +46,17 @@
         <el-main>
           <!-- 时间 -->
           <div class="time-box">
-            <router-link
-              to="/commonApp"
-              @click="this.activeURL = 1"
-              style="text-decoration: none"
-              ><Time
-            /></router-link>
+            <div style="cursor: pointer" @click="clickTimeBox()"><Time /></div>
           </div>
           <!-- 主题内容 -->
-          <router-view :focusedByFather="this.focused" @changeFocused="changeFocusedVal"/>
+          <keep-alive>
+            <component
+              :is="mainComponent"
+              :fFocused="this.focused"
+              :fActivePageIndex="this.activePageIndex"
+              @changeFocused="changeFocusedVal"
+            />
+          </keep-alive>
         </el-main>
       </div>
       <!-- 底部信息 -->
@@ -70,20 +70,69 @@
 <script>
 import Time from "../components/Home/Time.vue";
 import Footer from "../components/Home/Footer.vue";
+import Search from "./Home/Search.vue";
+import CommonApp from "./Home/CommonApp.vue";
+import Todo from "./Home/Todo.vue";
+import Note from "./Home/Note.vue";
+import FileSystems from "./Home/FileSystems.vue";
+import Translation from "./Home/Translation.vue";
 
 export default {
   name: "Home",
   components: {
     Time,
     Footer,
+    Search,
+    CommonApp,
+    Todo,
+    Note,
+    FileSystems,
+    Translation,
   },
   data() {
     return {
-      activeURL: 0,
-      focused: false,
+      activePageIndex: 0,
+      pageInfo: [],
+      mainComponent: "Search",
+      focused: true,
     };
   },
+  mounted() {
+    this.$router.options.routes[0].children.forEach((item, index) => {
+      this.pageInfo.push({
+        index: index,
+        name: item.name,
+        componentName: item.component.name,
+      });
+    });
+    window.addEventListener("wheel", this.handleScroll); // 监听滚动事件，然后用scrollPages这个方法进行相应的处理
+  },
+  destroyed() {
+    window.removeEventListener("wheel", this.handleScroll);
+  },
+  watch: {
+    // 监听focused数据变化
+    activePageIndex: function (val) {
+      if (val !== 0) {
+        this.focused = true;
+      }
+    },
+  },
   methods: {
+    clickMenuItem(index, componentName) {
+      this.activePageIndex = index;
+      this.mainComponent = componentName;
+    },
+    clickTimeBox() {
+      if (this.activePageIndex !== 0) {
+        this.activePageIndex = 0;
+        this.mainComponent = "Search";
+        this.focused = false;
+      } else {
+        this.activePageIndex = 1;
+        this.mainComponent = "CommonApp";
+      }
+    },
     toHome(event) {
       if (
         event.target.className !== "main-box" &&
@@ -91,13 +140,26 @@ export default {
       ) {
         return;
       }
-      this.activeURL = 0;
+      this.activePageIndex = 0;
       this.focused = false;
-      this.$router.push("/");
+      this.mainComponent = "Search";
     },
     changeFocusedVal(val) {
       this.focused = val;
-    }
+    },
+    handleScroll(e) {
+      // >0 向下滚动
+      if (e.deltaY > 0) {
+        this.activePageIndex = (this.activePageIndex + 1) % 6;
+        this.mainComponent = this.pageInfo[this.activePageIndex].componentName;
+      } else {
+        this.activePageIndex =
+          this.activePageIndex - 1 > 0
+            ? this.activePageIndex - 1
+            : (this.activePageIndex + 5) % 6;
+        this.mainComponent = this.pageInfo[this.activePageIndex].componentName;
+      }
+    },
   },
 };
 </script>
@@ -179,9 +241,10 @@ export default {
 .el-header .menu-underline.activedPage {
   transform: scaleX(1);
 }
-.el-header .menu-item a {
+.menu-item-router {
   color: #ffffffcc;
   text-decoration: none;
+  cursor: pointer;
 }
 .el-header .menu-item a:hover {
   color: #fff;

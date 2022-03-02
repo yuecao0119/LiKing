@@ -14,7 +14,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: '主页',
     component: Home,
-    redirect: '/search', // 地址重定向
     children: [ // 这样路径跳转会匹配到Home中的router-view
       {
         path: '/search',
